@@ -63,3 +63,8 @@ A aplicação utiliza uma estrutura de dados simples para representar personagen
 
 Sinta-se à vontade para contribuir com melhorias ou correções para este projeto. Basta fazer um fork e enviar uma pull request.
 
+## Sobre o Projeto
+
+Este projeto foi desenvolvido por alguém que está aprendendo Java e programação orientada a objetos pela primeira vez. Como resultado, pode haver áreas do código que não seguem as melhores práticas ou que poderiam ser otimizadas de maneira mais eficiente. No entanto, estou comprometido em aprender e aprimorar minhas habilidades à medida que avanço no desenvolvimento deste projeto.
+
+Se você tiver sugestões, correções ou feedback construtivo, fique à vontade para contribuir ou entrar em contato. Estou ansioso para melhorar e expandir minhas habilidades de programação por meio deste projeto!
