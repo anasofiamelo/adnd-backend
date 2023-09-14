@@ -21,5 +21,6 @@ public class Battle {
     private Integer opponentLife;
     @OneToMany(mappedBy = "battle", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Turn> turns;
+    @Enumerated(EnumType.STRING)
     private Player winner;
 }
