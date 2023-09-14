@@ -34,4 +34,8 @@ public class BattleController {
     public ResponseEntity<?> calculateDamage(@PathVariable Integer battleId, @RequestBody CalculateDamageRequestDTO calculateDamageDTO) {
         return battleService.calculateDamage(battleId, calculateDamageDTO);
     }
+    @GetMapping("{battleId}/history")
+    public ResponseEntity<?> getHistory(@PathVariable Integer battleId) {
+        return battleService.getHistory(battleId);
+    }
 }
