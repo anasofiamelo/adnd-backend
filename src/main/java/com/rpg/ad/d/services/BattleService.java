@@ -36,27 +36,29 @@ public class BattleService {
         Integer userCharacterId = battleDTO.userCharacterId();
         Integer opponentCharacterId = battleDTO.opponentCharacterId();
 
-        if (userCharacterId == null || opponentCharacterId == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Player's ID was not provided");
+        if (userCharacterId == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Player ID was not provided");
         }
-
         var userCharacter = characterRepository.findById(userCharacterId);
         if(userCharacter.isEmpty()) {
             var errorMessage = "Character with ID of " + userCharacterId + " was not found";
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
         }
-
-        var opponentCharacter = characterRepository.findById(opponentCharacterId);
-        if(opponentCharacter.isEmpty()) {
-            var errorMessage = "Character with ID of " + opponentCharacterId + " was not found";
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
-        }
-
-        var userCharacterData = userCharacter.get();
-        var opponentCharacterData = opponentCharacter.get();
-
+        Character userCharacterData = userCharacter.get();
         if(userCharacterData.getType() == CharacterType.MONSTER) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User character must be a hero!");
+        }
+
+        Character opponentCharacterData;
+        if(battleDTO.opponentCharacterId() == null) {
+            opponentCharacterData = characterRepository.findRandomMonster();
+        } else {
+            var opponentCharacter = characterRepository.findById(opponentCharacterId);
+            if(opponentCharacter.isEmpty()) {
+                var errorMessage = "Character with ID of " + opponentCharacterId + " was not found";
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorMessage);
+            }
+            opponentCharacterData = opponentCharacter.get();
         }
 
         Battle battle = new Battle();
@@ -64,7 +66,6 @@ public class BattleService {
         battle.setOpponentCharacter(opponentCharacterData);
         battle.setUserLife(userCharacterData.getHealth());
         battle.setOpponentLife(opponentCharacterData.getHealth());
-
         var newBattle = battleRepository.save(battle);
 
         Turn turn = new Turn();
