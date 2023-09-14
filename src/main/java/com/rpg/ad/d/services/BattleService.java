@@ -1,5 +1,6 @@
 package com.rpg.ad.d.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rpg.ad.d.dto.*;
 import com.rpg.ad.d.entities.Battle;
 import com.rpg.ad.d.entities.Character;
@@ -13,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.Random;
 
@@ -26,6 +29,8 @@ public class BattleService {
     TurnRepository turnRepository;
     @Autowired
     TurnService turnService;
+    @Autowired
+    ObjectMapper objectMapper;
     public ResponseEntity<?> startBattle(StartBattleDTO battleDTO) {
         Integer userCharacterId = battleDTO.userCharacterId();
         Integer opponentCharacterId = battleDTO.opponentCharacterId();
@@ -269,7 +274,39 @@ public class BattleService {
         }
         return ResponseEntity.ok(responseDTO);
     }
+    public ResponseEntity<?> getHistory(Integer battleId) {
+        var battleData = battleRepository.findById(battleId);
+        if(battleData.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Battle not found");
+        }
 
+        var rawBattleResults = battleRepository.getBattleHistory(battleId);
+        var processedResults = new ArrayList<>();
+
+        for(Object[] rawResult : rawBattleResults) {
+            BattleHistoryDTO battleHistoryDTO = new BattleHistoryDTO();
+            Integer id = (Integer) rawResult[0];
+            Integer userId = (Integer) rawResult[1];
+            Integer opponentId = (Integer) rawResult[2];
+            String winner = (String) rawResult[3];
+            String turnsDataJson = (String) rawResult[4];
+
+            try {
+                TurnDTO[] turnsData = objectMapper.readValue(turnsDataJson, TurnDTO[].class);
+                battleHistoryDTO.setId(id);
+                battleHistoryDTO.setUserId(userId);
+                battleHistoryDTO.setOpponentId(opponentId);
+                battleHistoryDTO.setWinner(winner);
+                battleHistoryDTO.setTurnData(turnsData);
+
+                processedResults.add(battleHistoryDTO);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return ResponseEntity.ok(processedResults);
+    }
     public int rollDice(int numberOfDice, int numberOfFaces) {
         Random random = new Random();
         int total = 0;
