@@ -13,6 +13,6 @@ public interface BattleRepository extends JpaRepository<Battle, Integer> {
             "FROM battle " +
             "LEFT JOIN turn ON battle.id = turn.battle_id " +
             "WHERE battle.id = :battleId " +
-            "GROUP BY battle.user_character_id, battle.opponent_character_id", nativeQuery = true)
+            "GROUP BY battle.id", nativeQuery = true)
     List<Object[]> getBattleHistory(int battleId);
 }
