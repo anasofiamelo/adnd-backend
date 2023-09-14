@@ -5,6 +5,7 @@ import com.rpg.ad.d.dto.*;
 import com.rpg.ad.d.entities.Battle;
 import com.rpg.ad.d.entities.Character;
 import com.rpg.ad.d.entities.Turn;
+import com.rpg.ad.d.enums.CharacterType;
 import com.rpg.ad.d.enums.Player;
 import com.rpg.ad.d.repository.BattleRepository;
 import com.rpg.ad.d.repository.CharacterRepository;
@@ -36,7 +37,7 @@ public class BattleService {
         Integer opponentCharacterId = battleDTO.opponentCharacterId();
 
         if (userCharacterId == null || opponentCharacterId == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Character's ID was not provided");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Player's ID was not provided");
         }
 
         var userCharacter = characterRepository.findById(userCharacterId);
@@ -53,6 +54,10 @@ public class BattleService {
 
         var userCharacterData = userCharacter.get();
         var opponentCharacterData = opponentCharacter.get();
+
+        if(userCharacterData.getType() == CharacterType.MONSTER) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User character must be a hero!");
+        }
 
         Battle battle = new Battle();
         battle.setUserCharacter(userCharacterData);
