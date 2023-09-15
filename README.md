@@ -7,19 +7,21 @@ personagens e batalhas.
 ## Funcionalidades
 
 - Escolha o seu personagem favorito (herói ou monstro) para duelar em turnos.
+- Escolha seu oponente (deve ser um monstro) ou, se preferir, o jogo escolherá por você.
 - Realize batalhas com iniciativas aleatórias.
 - Calcule o dano causado com base na força, defesa e agilidade do personagem.
 - Acompanhe o histórico de batalhas e detalhes de cada turno.
 
 ## Requisitos
 
-- Java 8 ou superior
+- Java 17
+- Spring Boot
 - PostgresSQL
 
 ## Configurações do Banco de Dados
 
 - Certifique-se de ter um banco de dados Postgres configurado e atualize as informações
-de conexão no arquivo `application.properties` do projeto.
+de conexão no arquivo `application.properties` seguindo as instruções do arquivo de exemplo do projeto.
 
 ## Executando a Aplicação
  
@@ -34,30 +36,79 @@ a partir daí.
 
 ## Endpoints da API
 
-- `/characters`: CRUD (Create, Read, Update, Delete) para personagens.
-- `/battles/start`: Inicia uma nova batalha entre o usuário e o oponente.
-- `/battles/{battleId}/attack`: Realiza um ataque em uma batalha.
-- `/battles/{battleId}/defense`: Realiza uma defesa em uma batalha.
-- `/battles/{battleId}/calculateDamage`: Cálcula o dano final depois das duas ações de um turno de uma batalha.
-- `/battles/{battleId}/history`: Retorna o histórico de uma batalha específica.
+### Character
+- `POST /character`: Adiciona um novo personagem ao jogo.
+~~~
+Recebe os dados do novo personagem.
+obs: A propriedade "type" só pode ser preenchida como "HERO" ou "MONSTER".
+
+body: {
+    "name": "Katarina",
+    "health": 20,
+    "strength": 15,
+    "defense": 10,
+    "agility": 10,
+    "diceAmount": 1,
+    "diceFaces": 12,
+    "type": "HERO"
+}
+~~~
+
+- `GET /character`: Retorna uma lista dos personagens existentes no jogo. 
+
+- `GET /character/{characterId}`: Retorna um personagem específico.
+
+- `PATCH /character/{characterId}`: Atualiza um personagem específico com as informações a serem atualizadas.
+
+- `DELETE /character/{characterId}`: Deleta um personagem específico.
+
+### Battle
+
+- `POST /battle/start`: Inicia uma nova batalha entre o usuário e o oponente.
+~~~
+Recebe os ID's dos personagens do usuário e do oponente.
+obs: Não é obrigatório passar o id do personagem do oponente. Se for o caso, um monstro 
+aleatório será escolhido para o mesmo.
+
+body: {
+    "userCharacterId": 1,
+    "opponentCharacterId": 3
+}
+~~~
+
+- `POST /battle/{battleId}/attack`: Realiza um ataque em uma batalha.
+~~~
+Recebe o Player que está atacando e o número do turno.
+
+body: {
+    "attacker": "USER",
+    "turn": 1
+}
+~~~
+- `POST /battle/{battleId}/defense`: Realiza uma defesa em uma batalha.
+~~~
+Recebe o Player que está defendendo e o número do turno.
+
+body: {
+    "defender": "USER",
+    "turn": 1
+}
+~~~
+- `POST /battle/{battleId}/calculateDamage`: Cálcula o dano final depois das duas ações de um turno de uma batalha.
+~~~
+Recebe o Player que está atacando e o número do turno.
+
+body: {
+    "attacker": "USER",
+    "turn": 1
+}
+~~~
+- `GET /battle/{battleId}/history`: Retorna o histórico de uma batalha específica.
 
 ## Exemplo de uso
 
 Você pode utilizar um cliente HTTP (por exemplo, Postman ou cURL) para acessar os 
 endpoints da API e testar as funcionalidades.
-
-## Exemplo de requisições para iniciar uma batalha
-
-`POST /battles/start
-{
-"userCharacterId": 1,
-"opponentCharacterId": 2
-}
-`
-
-## Estrutura de Dados
-
-A aplicação utiliza uma estrutura de dados simples para representar personagens, batalhas e turnos. Certifique-se de entender a estrutura antes de usar a API.
 
 ## Contribuição
 
